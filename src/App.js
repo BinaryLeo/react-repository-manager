@@ -1,67 +1,110 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 function App() {
-  const [list, setList] = useState([])
-  const [user, setUser] = useState('binaryleo') // data from gituser
+  const [list, setList] = useState([]);
+  const [user, setUser] = useState('binaryleo'); // Github username
+  //-------------------------------------------------------------------
   const icons = {
     concluded: '📁',
-    underDevelopment: '📌',
+    underDevelopment: '📌', // when click  on button change to this icon.
   }
-  const [BtnText, setBtnText] = useState('Concluded')
-  let textInput = React.createRef() // Add a reference to the input element
-  function handleChange(e) {
-    setUser(textInput.current.value) // set the value of the input to the state
+    //-------------------------------------------------------------------
+  const repoNumber = list.filter((list) => list).length; // number of repositories
+  const pinnedRepo = list.filter((list) => list.underManagement).length; // number of pinned repositories
+    //-------------------------------------------------------------------
+  let textInput = React.createRef(); // Add a reference to the input element
+    //-------------------------------------------------------------------
+  function handleChange() {
+    //if text input isempty, alert the user
+    if (textInput.current.value === '') {
+      alert('Please enter a username');
+    } else {
+      setUser(textInput.current.value); // set the value of the input to the state
+    }
   }
-
+  //-------------------------------------------------------------------
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(`https://api.github.com/users/${user}/repos`) //fetch the data from the api using the user
-      const data = await response.json() // return data in json format
-      setList(data) // set the data to the state - data is an array of objects
+      try {
+        if (localStorage.getItem('list')) {
+          // load the list from local storage
+          setList(JSON.parse(localStorage.getItem('list')));
+        } else {
+          const response = await fetch(
+            `https://api.github.com/users/${user}/repos`,// fetch the repos of the user
+          )
+          const data = await response.json();
+          setList(data);
+          /* localStorage.setItem('list', JSON.stringify(data)) // save the data to local storage */
+        }
+      } catch (err) {
+        console.log(err); // if there is an error, log it
+      }
     }
+
     fetchData()
   }, [user]) // [] means that this effect will only run once - an initial render
 
   useEffect(() => {
     const filtered = list.filter((list) => list.underManagement) // filter out the favorite repos
-    document.title = ` ${user} - ${icons.underDevelopment} Repos: ${filtered.length}` // this is a side effect
+    document.title = `${icons.underDevelopment}  Pinned Repos: ${filtered.length}`; // this is a side effect
   }, [icons.underDevelopment, user, list]) // this effect will run every time the list changes
-
+  function handleRemove() {
+    //if theres data on local storage,  crete a pop up to ask if you want to delete the data if say yes delete it
+    if (localStorage.getItem('list')) {
+      if (window.confirm('Are you sure you want to delete the data?')) {
+        localStorage.removeItem('list');
+        setList([]);
+        window.location.reload();
+      }
+    } else {
+      alert('There is no data to delete')
+    }
+  }
   function handleRepo(id) {
     const UnderDevelopment = list.map((list) => {
       return list.id === id
         ? { ...list, underManagement: !list.underManagement }
         : list
-
-      //change icon when clicking on repo
-
       // run through the repos and return the repo with the same id as the id passed in
-      // if the id matches, add a favorite property to the repo as true
+      // if the id matches, add a underManagement property to the repo as true
     })
-    setList(UnderDevelopment)
+    setList(UnderDevelopment);
+    localStorage.setItem('list', JSON.stringify(UnderDevelopment)); // save the data to local storage on every click
+    const datalist = localStorage.getItem('list'); // get the data from local storage after every click
+    console.log(datalist); // log the data to the console
   }
   return (
     <>
       <Container>
-        <input
+        <Input
           ref={textInput}
           type="text"
           placeholder="Type your Github User"
         />
-        <SearchBtn onClick={() => handleChange()}>Search</SearchBtn>
+        <SearchBtn onClick={() => handleChange()}>Search Repos</SearchBtn>
+        <SearchBtn onClick={() => handleRemove()}>Remove User</SearchBtn>
+
+        <UserTag>
+          <Tag>
+            Total: {repoNumber} Repositories and {pinnedRepo} pinned
+            repositories Under development
+          </Tag>
+        </UserTag>
       </Container>
+
       <Scrollable>
         <ul>
           {list.map((list) => {
             return (
               <LI key={list.id}>
                 <p>
-                  <Button onClick={() => handleRepo(list.id)}>{BtnText}</Button>
+                  <Button onClick={() => handleRepo(list.id)}>Pin it</Button>
 
                   {list.underManagement ? (
-                    <span> ${icons.underDevelopment} </span>
+                    <span> {icons.underDevelopment} </span>
                   ) : (
-                    <span> ${icons.concluded} </span>
+                    <span> {icons.concluded} </span>
                   )}
                   <A href={list.html_url}>{list.name}</A>
                   <Span> - {list.description}</Span>
@@ -74,7 +117,9 @@ function App() {
     </>
   )
 }
-
+const Input = styled.input`
+  margin-right: 1.25em;
+`
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -85,7 +130,6 @@ const Container = styled.div`
   position: fixed;
   top: 0;
   background-color: #0d1117;
-  border-bottom: 1px solid #282a36;
 `
 const SearchBtn = styled.button`
   background: transparent;
@@ -96,6 +140,21 @@ const SearchBtn = styled.button`
   padding: 0.25em 1em;
   cursor: pointer;
 `
+const UserTag = styled.div`
+  width: 100%;
+  margin-top: 100px;
+  position: fixed;
+  background-color: #0d1117;
+  color: #18f8d7;
+  height: 40px;
+  text-transform: capitalize;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+`
+const Tag = styled.h5`
+  margin-left: 30px;
+`
+
 const Scrollable = styled.div`
   margin-top: 120px;
   overflow-y: scroll;
