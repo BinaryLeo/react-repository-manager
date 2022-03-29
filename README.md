@@ -13,4 +13,5 @@ An application using React Hooks to manage repositories under development.
 </div>
 
 
-![login](https://user-images.githubusercontent.com/72607039/160298871-8286c43a-d23f-4596-94ba-0f90ddd97250.gif)
+
+![Animação](https://user-images.githubusercontent.com/72607039/160601747-17cea240-38e1-4c98-bf45-c04883be2663.gif)
