@@ -2,7 +2,7 @@
 An application using React Hooks to manage repositories under development.
 
 - List your repositories and use the React Hooks to pin it as under Development or not.
-- Save on local storage to manage your projects.
+- Save on local Storage to manage your projects.
 
 <div align="center" style="margin: 20px; text-align: center">
 
