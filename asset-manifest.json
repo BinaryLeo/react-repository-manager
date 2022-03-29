@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/react-repository-manager/static/css/main.264c1421.css",
+    "main.js": "/react-repository-manager/static/js/main.b459b71f.js",
+    "index.html": "/react-repository-manager/index.html",
+    "main.264c1421.css.map": "/react-repository-manager/static/css/main.264c1421.css.map",
+    "main.b459b71f.js.map": "/react-repository-manager/static/js/main.b459b71f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.264c1421.css",
+    "static/js/main.b459b71f.js"
+  ]
+}
