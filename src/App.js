@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
 function App() {
-  const [list, setList] = useState([]);
-  const [user, setUser] = useState('binaryleo'); // Github username
+  const [list, setList] = useState([])//repositories.
+  const [user, setUser] = useState() // Github username.
   //-------------------------------------------------------------------
   const icons = {
     concluded: '📁',
     underDevelopment: '📌', // when click  on button change to this icon.
   }
-    //-------------------------------------------------------------------
-  const repoNumber = list.filter((list) => list).length; // number of repositories
-  const pinnedRepo = list.filter((list) => list.underManagement).length; // number of pinned repositories
-    //-------------------------------------------------------------------
-  let textInput = React.createRef(); // Add a reference to the input element
-    //-------------------------------------------------------------------
+  //-------------------------------------------------------------------
+  const repoNumber = list.filter((list) => list).length // number of repositories
+  const pinnedRepo = list.filter((list) => list.underManagement).length // number of pinned repositories.
+  //-------------------------------------------------------------------
+  let textInput = React.createRef() // Add a reference to the input element.
+  //-------------------------------------------------------------------
   function handleChange() {
-    //if text input isempty, alert the user
+    //if text input is empty, alert the user.
     if (textInput.current.value === '') {
-      alert('Please enter a username');
+      alert('Please enter a username')
     } else {
-      setUser(textInput.current.value); // set the value of the input to the state
+      setUser(textInput.current.value) // set the value of the input to the state.
     }
   }
   //-------------------------------------------------------------------
@@ -29,36 +29,36 @@ function App() {
         if (localStorage.getItem('list')) {
           // load the list from local storage
           setList(JSON.parse(localStorage.getItem('list')));
+          setUser(list[0].owner.login);//Get the user from the first item in the list.
         } else {
           const response = await fetch(
-            `https://api.github.com/users/${user}/repos`,// fetch the repos of the user
+            `https://api.github.com/users/${user}/repos`, // fetch the repos of the user case the user is not empty.
           )
-          const data = await response.json();
-          setList(data);
+          const data = await response.json()
+          setList(data)
           /* localStorage.setItem('list', JSON.stringify(data)) // save the data to local storage */
         }
       } catch (err) {
-        console.log(err); // if there is an error, log it
+        console.log(err) // if there is an error, log it
       }
     }
-
     fetchData()
-  }, [user]) // [] means that this effect will only run once - an initial render
+  }, [list, user]) // [] means that this effect will only run once - an initial render
 
   useEffect(() => {
     const filtered = list.filter((list) => list.underManagement) // filter out the favorite repos
-    document.title = `${icons.underDevelopment}  Pinned Repos: ${filtered.length}`; // this is a side effect
+    document.title = `${icons.underDevelopment}  Pinned Repos: ${filtered.length}` // this is a side effect
   }, [icons.underDevelopment, user, list]) // this effect will run every time the list changes
   function handleRemove() {
     //if theres data on local storage,  crete a pop up to ask if you want to delete the data if say yes delete it
     if (localStorage.getItem('list')) {
       if (window.confirm('Are you sure you want to delete the data?')) {
-        localStorage.removeItem('list');
-        setList([]);
-        window.location.reload();
+        localStorage.removeItem('list')
+        setList([])
+        window.location.reload()
       }
     } else {
-      alert('There is no data to delete')
+      alert('There is no data to delete!')
     }
   }
   function handleRepo(id) {
@@ -69,10 +69,10 @@ function App() {
       // run through the repos and return the repo with the same id as the id passed in
       // if the id matches, add a underManagement property to the repo as true
     })
-    setList(UnderDevelopment);
-    localStorage.setItem('list', JSON.stringify(UnderDevelopment)); // save the data to local storage on every click
-    const datalist = localStorage.getItem('list'); // get the data from local storage after every click
-    console.log(datalist); // log the data to the console
+    setList(UnderDevelopment)
+    localStorage.setItem('list', JSON.stringify(UnderDevelopment)) // save the data to local storage on every click
+    const datalist = localStorage.getItem('list') // get the data from local storage after every click
+    console.log(datalist) // log the data to the console
   }
   return (
     <>
@@ -87,7 +87,7 @@ function App() {
 
         <UserTag>
           <Tag>
-            Total: {repoNumber} Repositories and {pinnedRepo} pinned
+            {user} - Total: {repoNumber} Repositories and {pinnedRepo} pinned
             repositories Under development
           </Tag>
         </UserTag>
