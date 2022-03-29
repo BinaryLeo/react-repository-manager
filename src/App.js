@@ -154,7 +154,6 @@ const UserTag = styled.div`
 const Tag = styled.h5`
   margin-left: 30px;
 `
-
 const Scrollable = styled.div`
   margin-top: 120px;
   overflow-y: scroll;
